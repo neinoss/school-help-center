@@ -1,0 +1,428 @@
+/* ----------------------------------------------
+GLOBAL RESET
+---------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background: #f5f7fb;
+}
+
+/* ----------------------------------------------
+ROOT WRAPPER + BACKGROUND
+---------------------------------------------- */
+.app-root {
+  min-height: 100vh;
+  padding: 32px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.5s ease, color 0.3s ease;
+}
+
+.app-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.bg-illustration {
+  position: fixed;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.4; /* ~40% visible */
+  pointer-events: none;
+  z-index: 0;
+  filter: grayscale(20%) contrast(1.15) brightness(0.95) saturate(1.15);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* ----------------------------------------------
+HEADER
+---------------------------------------------- */
+.app-header {
+  margin-bottom: 26px;
+}
+
+.fancy-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+}
+
+.header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.school-name {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7d75ff;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.app-title {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.app-subtitle {
+  opacity: 0.78;
+  max-width: 640px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.back-btn {
+  background: #ffffff;
+  border-radius: 999px;
+  border: 1px solid #d3d3e4;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.back-btn:hover {
+  background: #f3f3ff;
+  transform: translateY(-2px);
+}
+
+/* ----------------------------------------------
+SUBJECT GRID (HOME)
+---------------------------------------------- */
+.home-intro {
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
+
+.subject-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.subject-card {
+  position: relative;
+  background: #ffffff;
+  padding: 20px 22px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.subject-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16);
+}
+
+/* Icon + text */
+.subject-icon {
+  font-size: 38px;
+  margin-bottom: 10px;
+  transition: transform 0.2s ease, filter 0.25s ease;
+}
+
+.subject-name {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.subject-summary {
+  opacity: 0.75;
+  font-size: 14px;
+}
+
+.subject-grades {
+  font-size: 13px;
+  margin-top: 10px;
+  opacity: 0.6;
+}
+
+/* Colorful hover tints per subject */
+.subject-card[data-subject="arabic"]:hover {
+  background: rgba(255, 235, 247, 0.95);
+  border-color: #d06de0;
+}
+
+.subject-card[data-subject="english"]:hover {
+  background: rgba(226, 239, 255, 0.95);
+  border-color: #4285f4;
+}
+
+.subject-card[data-subject="science"]:hover {
+  background: rgba(217, 255, 226, 0.95);
+  border-color: #45c466;
+}
+
+.subject-card[data-subject="math"]:hover {
+  background: rgba(230, 230, 255, 0.95);
+  border-color: #6c63ff;
+}
+
+.subject-card[data-subject="history"]:hover {
+  background: rgba(255, 245, 225, 0.95);
+  border-color: #d18c3b;
+}
+
+.subject-card[data-subject="geography"]:hover {
+  background: rgba(218, 255, 234, 0.95);
+  border-color: #3cb371;
+}
+
+.subject-card[data-subject="computer"]:hover {
+  background: rgba(236, 231, 255, 0.95);
+  border-color: #6a5acd;
+}
+
+.subject-card[data-subject="economics"]:hover {
+  background: rgba(255, 246, 214, 0.96);
+  border-color: #e0a600;
+}
+
+.subject-card[data-subject="social"]:hover {
+  background: rgba(255, 232, 232, 0.95);
+  border-color: #c44545;
+}
+
+.subject-card:hover .subject-icon {
+  transform: translateY(-3px) scale(1.08);
+  filter: drop-shadow(0 0 8px rgba(110, 80, 255, 0.45));
+}
+
+/* ----------------------------------------------
+SUBJECT VIEW PAGE
+---------------------------------------------- */
+.subject-view-title {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.subject-view-summary {
+  opacity: 0.75;
+  margin-bottom: 18px;
+}
+
+.subject-layout {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+/* ----------------------------------------------
+CONTENT CARD + VIDEOS
+---------------------------------------------- */
+.subject-content-card {
+  flex: 1;
+  padding: 22px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  min-height: 220px;
+  transition: all 0.3s ease;
+}
+
+.glow {
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+}
+
+.videos-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.video-card {
+  background: #ffffff;
+  padding: 14px 15px;
+  border-radius: 16px;
+  border: 1px solid #e0e0ee;
+  transition: all 0.25s ease;
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+}
+
+.video-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.video-link {
+  margin-top: 8px;
+  display: inline-block;
+  text-decoration: none;
+  color: #6c63ff;
+  font-weight: 500;
+}
+
+.video-link:hover {
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------
+ANIMATIONS
+---------------------------------------------- */
+.fade-in {
+  animation: fadeIn 0.7s ease forwards;
+}
+
+.fade-up {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.pop {
+  animation: popIn 0.35s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ----------------------------------------------
+DARK MODE
+---------------------------------------------- */
+.dark {
+  color: #f5f5f7;
+}
+
+/* Dark background gradient */
+.dark.app-root {
+  background: radial-gradient(circle at top, #2a2a3b, #050814);
+}
+
+/* Darken background photo */
+.dark .bg-illustration {
+  opacity: 0.26;
+  filter: grayscale(50%) contrast(1.05) brightness(0.55) saturate(1.1);
+}
+
+.dark .school-name,
+.dark .app-title,
+.dark .app-subtitle {
+  color: #f7f7ff;
+}
+
+.dark .subject-card,
+.dark .subject-content-card,
+.dark .video-card {
+  background: #171821;
+  color: #f3f3ff;
+  border-color: #33354a;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+}
+
+.dark .subject-summary,
+.dark .subject-grades,
+.dark .subject-view-summary {
+  opacity: 0.85;
+}
+
+.dark .subject-card:hover {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.85);
+}
+
+.dark .video-link {
+  color: #b1a6ff;
+}
+
+.dark .back-btn {
+  background: #232435;
+  color: #f3f3ff;
+  border-color: #3a3c59;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+.dark .back-btn:hover {
+  background: #2f3147;
+}
+
+/* ----------------------------------------------
+RESPONSIVE
+---------------------------------------------- */
+@media (max-width: 900px) {
+  .subject-layout {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-root {
+    padding: 22px 14px;
+  }
+
+  .app-title {
+    font-size: 30px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .subject-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bg-illustration {
+    background-position: center bottom;
+  }
+}
+.dark .grade-sidebar {
+  background: rgba(18, 18, 26, 0.9);
+  border-color: #2c2f44;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.85);
+  color: #f0f0ff;   /* ← THIS LINE was missing */
+}

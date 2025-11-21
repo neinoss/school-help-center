@@ -1,0 +1,12 @@
+/* RESET */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* IMPORTANT: Body must stay transparent */
+body {
+  font-family: Arial, sans-serif;
+  background: transparent !important;
+}
