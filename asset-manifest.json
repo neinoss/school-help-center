@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/school-help-center/static/css/main.99bc2cce.css",
+    "main.js": "/school-help-center/static/js/main.35f898c3.js",
+    "index.html": "/school-help-center/index.html",
+    "main.99bc2cce.css.map": "/school-help-center/static/css/main.99bc2cce.css.map",
+    "main.35f898c3.js.map": "/school-help-center/static/js/main.35f898c3.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.99bc2cce.css",
+    "static/js/main.35f898c3.js"
+  ]
+}
