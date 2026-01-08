@@ -16,63 +16,63 @@ const subjectConfig = {
     key: "arabic",
     name: "Arabic",
     summary: "Arabic language, grammar, and reading skills.",
-    icon: "AR",
+    icon: "📄",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   english: {
     key: "english",
     name: "English",
     summary: "Vocabulary, grammar, and reading in English.",
-    icon: "EN",
+    icon: "📘",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   science: {
     key: "science",
     name: "Science",
     summary: "Biology, physics, chemistry and the world around us.",
-    icon: "SCI",
+    icon: "🧪",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   math: {
     key: "math",
     name: "Math",
     summary: "Numbers, operations, algebra and problem solving.",
-    icon: "MTH",
+    icon: "➕",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   history: {
     key: "history",
     name: "History",
     summary: "Past civilizations, historic events, and people.",
-    icon: "HIS",
+    icon: "🏺",
     grades: Array.from({ length: 9 }, (_, i) => i + 4) // Grade 4-12
   },
   geography: {
     key: "geography",
     name: "Geography",
     summary: "Maps, continents, climates, and physical features.",
-    icon: "GEO",
+    icon: "🌍",
     grades: Array.from({ length: 9 }, (_, i) => i + 4)
   },
   computer: {
     key: "computer",
     name: "Computer Learning",
     summary: "Basics, typing, coding and digital skills.",
-    icon: "CS",
+    icon: "💻",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   economics: {
     key: "economics",
     name: "Economics",
     summary: "Supply, demand, money, basic economic concepts.",
-    icon: "ECO",
+    icon: "💰",
     grades: [11, 12]
   },
   social: {
     key: "social",
     name: "Social Studies",
     summary: "Civics, culture and human behavior.",
-    icon: "SOC",
+    icon: "🏛️",
     grades: [11, 12]
   }
 };
@@ -933,7 +933,7 @@ export default function App() {
         <header className="app-header fancy-header">
           <div className="header-center">
             <p className="school-name">AL BAYADER SCHOOL</p>
-            <h1 className="app-title">School Help Center</h1>
+            <h1 className="app-title">📚 School Help Center</h1>
             <p className="app-subtitle">
               Colorful resources and YouTube videos for every subject and grade.
             </p>
@@ -941,12 +941,12 @@ export default function App() {
 
           <div className="header-actions">
             <button className="back-btn" onClick={toggleDark}>
-              {dark ? "Light Mode" : "Dark Mode"}
+              {dark ? "☀ Light Mode" : "🌙 Dark Mode"}
             </button>
 
             {currentSubject && (
               <button className="back-btn" onClick={handleBackHome}>
-                Back to Subjects
+                ⬅ Back to Subjects
               </button>
             )}
 
@@ -1104,7 +1104,7 @@ export default function App() {
                               target="_blank"
                               rel="noreferrer"
                             >
-                              Watch Video
+                              ▶ Watch Video
                             </a>
                           </div>
                         ))}

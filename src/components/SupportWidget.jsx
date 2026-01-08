@@ -7,7 +7,7 @@ export function SupportWidget() {
         rel="noreferrer"
         className="support-btn"
       >
-        WhatsApp Support
+        💬 WhatsApp Support
       </a>
     </div>
   );

@@ -11,6 +11,7 @@ export default function AuthPanel({ onAuth }) {
     confirm: "",
     remember: true
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -80,7 +81,7 @@ export default function AuthPanel({ onAuth }) {
         <label className="auth-field">
           <span>Password</span>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={form.password}
             onChange={(e) => updateField("password", e.target.value)}
             placeholder="At least 6 characters"
@@ -92,7 +93,7 @@ export default function AuthPanel({ onAuth }) {
           <label className="auth-field">
             <span>Confirm password</span>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={form.confirm}
               onChange={(e) => updateField("confirm", e.target.value)}
               placeholder="Repeat password"
@@ -100,6 +101,15 @@ export default function AuthPanel({ onAuth }) {
             />
           </label>
         )}
+
+        <label className="auth-toggle-line">
+          <input
+            type="checkbox"
+            checked={showPassword}
+            onChange={(e) => setShowPassword(e.target.checked)}
+          />
+          Show password
+        </label>
 
         <label className="auth-remember">
           <input
