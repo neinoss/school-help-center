@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GradeSidebar from "./components/GradeSidebar";
 import { SupportWidget } from "./components/SupportWidget";
+import AuthPanel from "./components/AuthPanel";
+import ProfileCard from "./components/ProfileCard";
+import { getMe, getResources, logout as apiLogout } from "./api";
 import "./components/SupportWidget.css";
 import "./App.css";
 
@@ -13,63 +16,63 @@ const subjectConfig = {
     key: "arabic",
     name: "Arabic",
     summary: "Arabic language, grammar, and reading skills.",
-    icon: "📄",
+    icon: "AR",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   english: {
     key: "english",
     name: "English",
     summary: "Vocabulary, grammar, and reading in English.",
-    icon: "📘",
+    icon: "EN",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   science: {
     key: "science",
     name: "Science",
     summary: "Biology, physics, chemistry and the world around us.",
-    icon: "🧪",
+    icon: "SCI",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   math: {
     key: "math",
     name: "Math",
     summary: "Numbers, operations, algebra and problem solving.",
-    icon: "➕",
+    icon: "MTH",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   history: {
     key: "history",
     name: "History",
     summary: "Past civilizations, historic events, and people.",
-    icon: "🏺",
-    grades: Array.from({ length: 9 }, (_, i) => i + 4) // Grade 4–12
+    icon: "HIS",
+    grades: Array.from({ length: 9 }, (_, i) => i + 4) // Grade 4-12
   },
   geography: {
     key: "geography",
     name: "Geography",
     summary: "Maps, continents, climates, and physical features.",
-    icon: "🌍",
+    icon: "GEO",
     grades: Array.from({ length: 9 }, (_, i) => i + 4)
   },
   computer: {
     key: "computer",
     name: "Computer Learning",
     summary: "Basics, typing, coding and digital skills.",
-    icon: "💻",
+    icon: "CS",
     grades: Array.from({ length: 12 }, (_, i) => i + 1)
   },
   economics: {
     key: "economics",
     name: "Economics",
     summary: "Supply, demand, money, basic economic concepts.",
-    icon: "💰",
+    icon: "ECO",
     grades: [11, 12]
   },
   social: {
     key: "social",
     name: "Social Studies",
     summary: "Civics, culture and human behavior.",
-    icon: "🏛️",
+    icon: "SOC",
     grades: [11, 12]
   }
 };
@@ -704,7 +707,7 @@ function getVideosForSubjectAndGrade(subjectKey, grade) {
     const query = `grade ${grade} ${subject.name.toLowerCase()} ${topic} for kids educational channel`;
     return {
       title: topic,
-      description: `${subject.name} – ${topic} (Grade ${grade}).`,
+      description: `${subject.name} - ${topic} (Grade ${grade}).`,
       url: buildYouTubeSearchUrl(query)
     };
   });
@@ -793,9 +796,23 @@ const backgroundImages = {
     "https://images.pexels.com/photos/3184398/pexels-photo-3184398.jpeg?auto=compress&cs=tinysrgb&w=1200"
 };
 
+
+
+
+
+
+
+
+
 export default function App() {
   const [currentSubjectKey, setCurrentSubjectKey] = useState(null);
   const [selectedGrade, setSelectedGrade] = useState(null);
+  const [activeView, setActiveView] = useState("home");
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [resources, setResources] = useState([]);
+  const [resourcesLoading, setResourcesLoading] = useState(false);
+  const [resourcesError, setResourcesError] = useState("");
   const [dark, setDark] = useState(
     typeof window !== "undefined" &&
       localStorage.getItem("dark-mode") === "true"
@@ -806,6 +823,52 @@ export default function App() {
     : null;
   const theme = currentSubject ? themes[currentSubjectKey] : null;
 
+  useEffect(() => {
+    let ignore = false;
+
+    getMe()
+      .then((data) => {
+        if (!ignore) setUser(data.user || null);
+      })
+      .catch(() => {
+        if (!ignore) setUser(null);
+      })
+      .finally(() => {
+        if (!ignore) setAuthLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!currentSubjectKey || !selectedGrade) {
+      setResources([]);
+      setResourcesError("");
+      return;
+    }
+
+    let ignore = false;
+    setResourcesLoading(true);
+    setResourcesError("");
+
+    getResources(currentSubjectKey, selectedGrade)
+      .then((rows) => {
+        if (!ignore) setResources(Array.isArray(rows) ? rows : []);
+      })
+      .catch((err) => {
+        if (!ignore) setResourcesError(err.message || "Failed to load resources.");
+      })
+      .finally(() => {
+        if (!ignore) setResourcesLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [currentSubjectKey, selectedGrade]);
+
   function toggleDark() {
     const newState = !dark;
     setDark(newState);
@@ -814,14 +877,31 @@ export default function App() {
     }
   }
 
+  function handleAuth(userInfo) {
+    setUser(userInfo);
+    setActiveView("home");
+  }
+
+  async function handleLogout() {
+    try {
+      await apiLogout();
+    } catch {
+      // Ignore logout errors so UI can reset.
+    }
+    setUser(null);
+    setActiveView("home");
+  }
+
   function handleSelectSubject(key) {
     setCurrentSubjectKey(key);
     setSelectedGrade(null);
+    setActiveView("home");
   }
 
   function handleBackHome() {
     setCurrentSubjectKey(null);
     setSelectedGrade(null);
+    setActiveView("home");
   }
 
   const videosForGrade =
@@ -853,7 +933,7 @@ export default function App() {
         <header className="app-header fancy-header">
           <div className="header-center">
             <p className="school-name">AL BAYADER SCHOOL</p>
-            <h1 className="app-title">📚 School Help Center</h1>
+            <h1 className="app-title">School Help Center</h1>
             <p className="app-subtitle">
               Colorful resources and YouTube videos for every subject and grade.
             </p>
@@ -861,113 +941,181 @@ export default function App() {
 
           <div className="header-actions">
             <button className="back-btn" onClick={toggleDark}>
-              {dark ? "☀ Light Mode" : "🌙 Dark Mode"}
+              {dark ? "Light Mode" : "Dark Mode"}
             </button>
 
             {currentSubject && (
               <button className="back-btn" onClick={handleBackHome}>
-                ⬅ Back to Subjects
+                Back to Subjects
+              </button>
+            )}
+
+            <button
+              className="back-btn"
+              onClick={() => setActiveView("profile")}
+            >
+              {user ? "Profile" : "Login / Sign up"}
+            </button>
+
+            {user && (
+              <button className="back-btn" onClick={handleLogout}>
+                Logout
               </button>
             )}
           </div>
+
+          <div className="auth-status">
+            {authLoading
+              ? "Checking session..."
+              : user
+              ? `Signed in as ${user.email}`
+              : "Not signed in"}
+          </div>
         </header>
 
-        {/* SUBJECT GRID (HOME) */}
-        {!currentSubject && (
-          <div>
-            <p className="home-intro">
-              Choose a subject to explore videos and learning resources for all
-              grades.
-            </p>
-
-            <div className="subject-grid">
-              {Object.values(subjectConfig).map((s) => (
-                <button
-                  key={s.key}
-                  className="subject-card pop"
-                  data-subject={s.key}
-                  onClick={() => handleSelectSubject(s.key)}
-                >
-                  <div className="subject-icon">{s.icon}</div>
-                  <h2 className="subject-name">{s.name}</h2>
-                  <p className="subject-summary">{s.summary}</p>
-                  <p className="subject-grades">
-                    Grades {s.grades[0]}–{s.grades[s.grades.length - 1]}
-                  </p>
-                </button>
-              ))}
-            </div>
+        {activeView === "profile" && (
+          <div className="profile-view fade-up">
+            {authLoading ? (
+              <p className="auth-loading">Checking session...</p>
+            ) : user ? (
+              <ProfileCard user={user} onLogout={handleLogout} />
+            ) : (
+              <AuthPanel onAuth={handleAuth} />
+            )}
           </div>
         )}
 
-        {/* SUBJECT VIEW */}
-        {currentSubject && (
-          <div className="subject-view fade-up">
-            <h2 className="subject-view-title">
-              {currentSubject.icon} {currentSubject.name}
-            </h2>
+        {activeView === "home" && (
+          <>
+            {/* SUBJECT GRID (HOME) */}
+            {!currentSubject && (
+              <div>
+                <p className="home-intro">
+                  Choose a subject to explore videos and learning resources for
+                  all grades.
+                </p>
 
-            <p className="subject-view-summary">{currentSubject.summary}</p>
+                <div className="subject-grid">
+                  {Object.values(subjectConfig).map((s) => (
+                    <button
+                      key={s.key}
+                      className="subject-card pop"
+                      data-subject={s.key}
+                      onClick={() => handleSelectSubject(s.key)}
+                    >
+                      <div className="subject-icon">{s.icon}</div>
+                      <h2 className="subject-name">{s.name}</h2>
+                      <p className="subject-summary">{s.summary}</p>
+                      <p className="subject-grades">
+                        Grades {s.grades[0]}-{s.grades[s.grades.length - 1]}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
-            <div className="subject-layout">
-              <GradeSidebar
-                grades={currentSubject.grades}
-                selectedGrade={selectedGrade}
-                onSelectGrade={setSelectedGrade}
-              />
+            {/* SUBJECT VIEW */}
+            {currentSubject && (
+              <div className="subject-view fade-up">
+                <h2 className="subject-view-title">
+                  {currentSubject.icon} {currentSubject.name}
+                </h2>
 
-              <section
-                className="subject-content-card glow"
-                style={{
-                  backgroundColor: theme?.cardBg,
-                  borderColor: theme?.accent
-                }}
-              >
-                <h3>
-                  {selectedGrade
-                    ? `Videos for Grade ${selectedGrade}`
-                    : "Choose a grade"}
-                </h3>
+                <p className="subject-view-summary">{currentSubject.summary}</p>
 
-                {!selectedGrade && (
-                  <p style={{ opacity: 0.7, marginTop: "10px" }}>
-                    Pick a grade from the left to show at least 5 helpful
-                    videos.
-                  </p>
-                )}
+                <div className="subject-layout">
+                  <GradeSidebar
+                    grades={currentSubject.grades}
+                    selectedGrade={selectedGrade}
+                    onSelectGrade={setSelectedGrade}
+                  />
 
-                {selectedGrade && videosForGrade.length === 0 && (
-                  <p style={{ opacity: 0.6, marginTop: "10px" }}>
-                    No videos configured for this subject yet.
-                  </p>
-                )}
+                  <section
+                    className="subject-content-card glow"
+                    style={{
+                      backgroundColor: theme?.cardBg,
+                      borderColor: theme?.accent
+                    }}
+                  >
+                    <h3>
+                      {selectedGrade
+                        ? `Videos for Grade ${selectedGrade}`
+                        : "Choose a grade"}
+                    </h3>
 
-                {selectedGrade && videosForGrade.length > 0 && (
-                  <div className="videos-grid">
-                    {videosForGrade.map((video, i) => (
-                      <div key={i} className="video-card pop">
-                        <h4 className="video-title">
-                          Grade {selectedGrade} – {video.title}
-                        </h4>
-                        <p>{video.description}</p>
-                        <a
-                          href={video.url}
-                          className="video-link"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          ▶ Watch Video
-                        </a>
-                        
+                    {!selectedGrade && (
+                      <p style={{ opacity: 0.7, marginTop: "10px" }}>
+                        Pick a grade from the left to show at least 5 helpful
+                        videos.
+                      </p>
+                    )}
+
+                    {selectedGrade && resourcesLoading && (
+                      <p className="resource-status">
+                        Loading saved resources...
+                      </p>
+                    )}
+
+                    {selectedGrade && resourcesError && (
+                      <p className="resource-error">{resourcesError}</p>
+                    )}
+
+                    {selectedGrade && resources.length > 0 && (
+                      <div className="resources-grid">
+                        {resources.map((resource) => (
+                          <div key={resource.id} className="resource-card pop">
+                            <h4 className="resource-title">{resource.title}</h4>
+                            {resource.description && (
+                              <p>{resource.description}</p>
+                            )}
+                            {resource.youtube_url && (
+                              <a
+                                href={resource.youtube_url}
+                                className="video-link"
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Open Resource
+                              </a>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                  
-                )}
-              </section>
-            </div>
-            <SupportWidget />
-          </div>
+                    )}
+
+                    {selectedGrade && videosForGrade.length === 0 && (
+                      <p style={{ opacity: 0.6, marginTop: "10px" }}>
+                        No videos configured for this subject yet.
+                      </p>
+                    )}
+
+                    {selectedGrade && videosForGrade.length > 0 && (
+                      <div className="videos-grid">
+                        {videosForGrade.map((video, i) => (
+                          <div key={i} className="video-card pop">
+                            <h4 className="video-title">
+                              Grade {selectedGrade} - {video.title}
+                            </h4>
+                            <p>{video.description}</p>
+                            <a
+                              href={video.url}
+                              className="video-link"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Watch Video
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                </div>
+                <SupportWidget />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -976,4 +1124,5 @@ export default function App() {
 
 
   );
+  
 }

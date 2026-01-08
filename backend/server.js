@@ -1,11 +1,19 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const db = require("./db");
 
 const app = express();
-app.use(cors());
+const corsOrigin = process.env.FRONTEND_URL || "http://localhost:3000";
+app.use(
+  cors({
+    origin: corsOrigin,
+    credentials: true
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/api/health", async (req, res) => {
   try {
@@ -15,10 +23,6 @@ app.get("/api/health", async (req, res) => {
     res.status(500).json({ server: true, db: false, error: e.message });
   }
 });
-
-app.listen(process.env.PORT || 4000, () =>
-  console.log("Backend running on port", process.env.PORT || 4000)
-);
 
 const authRoutes = require("./auth");
 app.use("/api", authRoutes);
@@ -74,3 +78,7 @@ app.get("/api/track/whatsapp/count", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+app.listen(process.env.PORT || 4000, () =>
+  console.log("Backend running on port", process.env.PORT || 4000)
+);
