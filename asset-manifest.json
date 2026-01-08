@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/school-help-center/static/css/main.97a3d266.css",
-    "main.js": "/school-help-center/static/js/main.74db1b4c.js",
+    "main.css": "/school-help-center/static/css/main.6a72c56e.css",
+    "main.js": "/school-help-center/static/js/main.edfc6e15.js",
     "index.html": "/school-help-center/index.html",
-    "main.97a3d266.css.map": "/school-help-center/static/css/main.97a3d266.css.map",
-    "main.74db1b4c.js.map": "/school-help-center/static/js/main.74db1b4c.js.map"
+    "main.6a72c56e.css.map": "/school-help-center/static/css/main.6a72c56e.css.map",
+    "main.edfc6e15.js.map": "/school-help-center/static/js/main.edfc6e15.js.map"
   },
   "entrypoints": [
-    "static/css/main.97a3d266.css",
-    "static/js/main.74db1b4c.js"
+    "static/css/main.6a72c56e.css",
+    "static/js/main.edfc6e15.js"
   ]
 }
