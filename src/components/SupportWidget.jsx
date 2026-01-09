@@ -1,4 +1,4 @@
-export function SupportWidget() {
+export function SupportWidget({ onClick }) {
   return (
     <div className="support-widget">
       <a
@@ -6,6 +6,7 @@ export function SupportWidget() {
         target="_blank"
         rel="noreferrer"
         className="support-btn"
+        onClick={onClick}
       >
         💬 WhatsApp Support
       </a>

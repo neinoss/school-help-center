@@ -66,3 +66,10 @@ export function toggleFavorite(payload) {
     body: JSON.stringify(payload)
   });
 }
+
+export function trackWhatsApp(payload) {
+  return apiRequest("/track/whatsapp", {
+    method: "POST",
+    body: JSON.stringify(payload || {})
+  });
+}

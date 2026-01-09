@@ -8,6 +8,7 @@ import {
   getMe,
   getResources,
   logout as apiLogout,
+  trackWhatsApp,
   toggleFavorite
 } from "./api";
 import "./components/SupportWidget.css";
@@ -996,6 +997,13 @@ export default function App() {
     ? backgroundImages[currentSubjectKey]
     : backgroundImages.home;
 
+  function handleWhatsAppClick() {
+    trackWhatsApp({
+      subject: currentSubjectKey,
+      grade: selectedGrade
+    }).catch(() => {});
+  }
+
   return (
      <div
       className={dark ? "app-root dark" : "app-root"}
@@ -1318,7 +1326,7 @@ export default function App() {
                     )}
                   </section>
                 </div>
-                <SupportWidget />
+                <SupportWidget onClick={handleWhatsAppClick} />
               </div>
             )}
           </>
