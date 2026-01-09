@@ -8,10 +8,11 @@ const COOKIE_NAME = "auth_token";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function setAuthCookie(res, token, remember) {
+  const isProd = process.env.NODE_ENV === "production";
   const options = {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: isProd ? "none" : "lax",
+    secure: isProd,
     path: "/"
   };
 

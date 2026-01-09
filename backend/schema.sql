@@ -21,3 +21,18 @@ CREATE TABLE whatsapp_clicks (
   grade INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE favorites (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  subject VARCHAR(32),
+  grade INT,
+  title VARCHAR(255) NOT NULL,
+  url VARCHAR(512),
+  kind VARCHAR(32) NOT NULL,
+  resource_id INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_favorite_resource (user_id, resource_id),
+  UNIQUE KEY uniq_favorite_item (user_id, subject, grade, title, url, kind),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

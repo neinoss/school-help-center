@@ -1,5 +1,12 @@
+const PRODUCTION_API_BASE =
+  "https://school-help-center-production.up.railway.app/api";
 const API_BASE =
-  process.env.REACT_APP_API_BASE || "http://localhost:4000/api";
+  process.env.REACT_APP_API_BASE ||
+  (typeof window !== "undefined" &&
+  window.location &&
+  window.location.hostname.includes("github.io")
+    ? PRODUCTION_API_BASE
+    : "http://localhost:4000/api");
 
 export async function apiRequest(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
@@ -47,4 +54,15 @@ export function getResources(subject, grade) {
     grade: String(grade)
   });
   return apiRequest(`/resources?${params.toString()}`, { method: "GET" });
+}
+
+export function getFavorites() {
+  return apiRequest("/favorites", { method: "GET" });
+}
+
+export function toggleFavorite(payload) {
+  return apiRequest("/favorites/toggle", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
 }

@@ -450,6 +450,78 @@ DATABASE RESOURCES
   color: #b42318;
 }
 
+.favorite-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.fav-btn {
+  border: 1px solid #d5d6ee;
+  border-radius: 999px;
+  background: #f7f7ff;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.fav-btn.small {
+  margin-top: 10px;
+}
+
+/* ----------------------------------------------
+FAVORITES
+---------------------------------------------- */
+.favorites-section {
+  max-width: 760px;
+  margin: 18px auto 30px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e2f0;
+}
+
+.favorites-header p {
+  opacity: 0.7;
+  margin-top: 6px;
+}
+
+.favorites-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.favorite-card {
+  background: #f8f8ff;
+  border: 1px solid #e2e2f0;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.favorite-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+.favorite-title {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.favorites-status,
+.favorites-error,
+.favorites-empty {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
 /* ----------------------------------------------
 ANIMATIONS
 ---------------------------------------------- */
@@ -570,6 +642,19 @@ DARK MODE
 
 .dark .auth-toggle {
   color: #b1a6ff;
+}
+
+.dark .favorites-section,
+.dark .favorite-card {
+  background: #171821;
+  color: #f3f3ff;
+  border-color: #33354a;
+}
+
+.dark .fav-btn {
+  background: #222338;
+  color: #f3f3ff;
+  border-color: #3a3c59;
 }
 
 /* ----------------------------------------------

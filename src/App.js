@@ -3,7 +3,13 @@ import GradeSidebar from "./components/GradeSidebar";
 import { SupportWidget } from "./components/SupportWidget";
 import AuthPanel from "./components/AuthPanel";
 import ProfileCard from "./components/ProfileCard";
-import { getMe, getResources, logout as apiLogout } from "./api";
+import {
+  getFavorites,
+  getMe,
+  getResources,
+  logout as apiLogout,
+  toggleFavorite
+} from "./api";
 import "./components/SupportWidget.css";
 import "./App.css";
 
@@ -813,6 +819,10 @@ export default function App() {
   const [resources, setResources] = useState([]);
   const [resourcesLoading, setResourcesLoading] = useState(false);
   const [resourcesError, setResourcesError] = useState("");
+  const [favorites, setFavorites] = useState([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
+  const [favoritesError, setFavoritesError] = useState("");
+  const [favoriteNotice, setFavoriteNotice] = useState("");
   const [dark, setDark] = useState(
     typeof window !== "undefined" &&
       localStorage.getItem("dark-mode") === "true"
@@ -841,6 +851,35 @@ export default function App() {
       ignore = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setFavorites([]);
+      setFavoritesError("");
+      setFavoritesLoading(false);
+      return;
+    }
+
+    let ignore = false;
+    setFavoritesLoading(true);
+    setFavoritesError("");
+
+    getFavorites()
+      .then((rows) => {
+        if (!ignore) setFavorites(Array.isArray(rows) ? rows : []);
+      })
+      .catch((err) => {
+        if (!ignore)
+          setFavoritesError(err.message || "Failed to load favorites.");
+      })
+      .finally(() => {
+        if (!ignore) setFavoritesLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [user]);
 
   useEffect(() => {
     if (!currentSubjectKey || !selectedGrade) {
@@ -890,6 +929,50 @@ export default function App() {
     }
     setUser(null);
     setActiveView("home");
+  }
+
+  function isFavorited(item) {
+    if (!favorites.length) return false;
+
+    if (item.resource_id) {
+      return favorites.some(
+        (fav) => Number(fav.resource_id) === Number(item.resource_id)
+      );
+    }
+
+    return favorites.some(
+      (fav) =>
+        fav.kind === item.kind &&
+        fav.subject === item.subject &&
+        Number(fav.grade) === Number(item.grade) &&
+        fav.title === item.title &&
+        (fav.url || null) === (item.url || null)
+    );
+  }
+
+  async function handleToggleFavorite(item) {
+    setFavoriteNotice("");
+    if (!user) {
+      setFavoriteNotice("Please sign in to save favorites.");
+      setActiveView("profile");
+      return;
+    }
+
+    try {
+      const response = await toggleFavorite(item);
+      if (response.favorited) {
+        setFavorites((prev) => [
+          { id: response.id, ...item },
+          ...prev
+        ]);
+      } else {
+        setFavorites((prev) =>
+          prev.filter((fav) => Number(fav.id) !== Number(response.id))
+        );
+      }
+    } catch (err) {
+      setFavoriteNotice(err.message || "Could not update favorite.");
+    }
   }
 
   function handleSelectSubject(key) {
@@ -978,7 +1061,74 @@ export default function App() {
             {authLoading ? (
               <p className="auth-loading">Checking session...</p>
             ) : user ? (
-              <ProfileCard user={user} onLogout={handleLogout} />
+              <>
+                <ProfileCard user={user} onLogout={handleLogout} />
+                <section className="favorites-section">
+                  <div className="favorites-header">
+                    <h3>Your favorites</h3>
+                    <p>Quick access to saved videos and resources.</p>
+                  </div>
+
+                  {favoritesLoading && (
+                    <p className="favorites-status">Loading favorites...</p>
+                  )}
+
+                  {favoritesError && (
+                    <p className="favorites-error">{favoritesError}</p>
+                  )}
+
+                  {!favoritesLoading && favorites.length === 0 && (
+                    <p className="favorites-empty">
+                      No favorites yet. Save a video to see it here.
+                    </p>
+                  )}
+
+                  {favorites.length > 0 && (
+                    <div className="favorites-grid">
+                      {favorites.map((fav) => (
+                        <div key={fav.id} className="favorite-card">
+                          <div className="favorite-meta">
+                            <span className="favorite-kind">
+                              {fav.kind === "resource" ? "Resource" : "Video"}
+                            </span>
+                            {fav.subject && (
+                              <span className="favorite-subject">
+                                {fav.subject} {fav.grade ? `- Grade ${fav.grade}` : ""}
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="favorite-title">{fav.title}</h4>
+                          {fav.url && (
+                            <a
+                              href={fav.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="video-link"
+                            >
+                              Open
+                            </a>
+                          )}
+                          <button
+                            className="fav-btn small"
+                            onClick={() =>
+                              handleToggleFavorite({
+                                subject: fav.subject,
+                                grade: fav.grade,
+                                title: fav.title,
+                                url: fav.url || null,
+                                kind: fav.kind,
+                                resource_id: fav.resource_id || null
+                              })
+                            }
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              </>
             ) : (
               <AuthPanel onAuth={handleAuth} />
             )}
@@ -1051,6 +1201,10 @@ export default function App() {
                       </p>
                     )}
 
+                    {favoriteNotice && (
+                      <p className="favorites-error">{favoriteNotice}</p>
+                    )}
+
                     {selectedGrade && resourcesLoading && (
                       <p className="resource-status">
                         Loading saved resources...
@@ -1069,16 +1223,37 @@ export default function App() {
                             {resource.description && (
                               <p>{resource.description}</p>
                             )}
-                            {resource.youtube_url && (
-                              <a
-                                href={resource.youtube_url}
-                                className="video-link"
-                                target="_blank"
-                                rel="noreferrer"
+                            <div className="favorite-actions">
+                              {resource.youtube_url && (
+                                <a
+                                  href={resource.youtube_url}
+                                  className="video-link"
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  Open Resource
+                                </a>
+                              )}
+                              <button
+                                className="fav-btn"
+                                onClick={() =>
+                                  handleToggleFavorite({
+                                    subject: currentSubjectKey,
+                                    grade: selectedGrade,
+                                    title: resource.title,
+                                    url: resource.youtube_url || null,
+                                    kind: "resource",
+                                    resource_id: resource.id
+                                  })
+                                }
                               >
-                                Open Resource
-                              </a>
-                            )}
+                                {isFavorited({
+                                  resource_id: resource.id
+                                })
+                                  ? "Unfavorite"
+                                  : "Favorite"}
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -1098,14 +1273,39 @@ export default function App() {
                               Grade {selectedGrade} - {video.title}
                             </h4>
                             <p>{video.description}</p>
-                            <a
-                              href={video.url}
-                              className="video-link"
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              ▶ Watch Video
-                            </a>
+                            <div className="favorite-actions">
+                              <a
+                                href={video.url}
+                                className="video-link"
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                ▶ Watch Video
+                              </a>
+                              <button
+                                className="fav-btn"
+                                onClick={() =>
+                                  handleToggleFavorite({
+                                    subject: currentSubjectKey,
+                                    grade: selectedGrade,
+                                    title: video.title,
+                                    url: video.url,
+                                    kind: "video",
+                                    resource_id: null
+                                  })
+                                }
+                              >
+                                {isFavorited({
+                                  subject: currentSubjectKey,
+                                  grade: selectedGrade,
+                                  title: video.title,
+                                  url: video.url,
+                                  kind: "video"
+                                })
+                                  ? "Unfavorite"
+                                  : "Favorite"}
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
