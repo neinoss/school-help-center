@@ -1040,6 +1040,12 @@ export default function App() {
               {user ? "Profile" : "Login / Sign up"}
             </button>
 
+            {activeView === "profile" && (
+              <button className="back-btn" onClick={() => setActiveView("home")}>
+                Back to App
+              </button>
+            )}
+
             {user && (
               <button className="back-btn" onClick={handleLogout}>
                 Logout
@@ -1047,7 +1053,7 @@ export default function App() {
             )}
           </div>
 
-          <div className="auth-status">
+          <div className={`auth-status ${user ? "auth-status-active" : ""}`}>
             {authLoading
               ? "Checking session..."
               : user
